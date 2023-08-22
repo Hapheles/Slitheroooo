@@ -10,7 +10,7 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int SCREEN_HEIGHT = 600;
     static final int UNIT_SIZE = 25; //size of an item
     static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/UNIT_SIZE;
-    static final int DELAY = 75;
+    static final int DEFAULT_DELAY = 70;
 
     final int x[] = new int[GAME_UNITS];
     final int y[] = new int[GAME_UNITS];
@@ -20,7 +20,6 @@ public class GamePanel extends JPanel implements ActionListener {
     int appleY;
     char direction = 'R' ; //depends on which direction to start
     boolean running = false;
-    Timer timer;
     Random random;
     GamePanel() {
         random = new Random();
@@ -28,13 +27,25 @@ public class GamePanel extends JPanel implements ActionListener {
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.addKeyListener(new MyKeyAdapter());
-        startGame();
+        initializeGame();
     }
 
-    public void startGame() {
+    private Timer timer;
+
+    public void initializeGame() {
+        if (timer != null) {
+            timer.stop(); // Stop the existing timer
+        }
         newApple();
         running = true;
-        timer = new Timer(DELAY,this);
+        bodyParts = 6;
+        applesEaten = 0;
+        direction = 'R';
+        for (int i = 0; i < bodyParts; i++) {
+            x[i] = 0;
+            y[i] = 0;
+        }
+        timer = new Timer(DEFAULT_DELAY, this);
         timer.start();
     }
 
@@ -150,6 +161,11 @@ public class GamePanel extends JPanel implements ActionListener {
         g.setFont(new Font("Ink Free", Font.BOLD, 75));
         FontMetrics metrics2 = getFontMetrics(g.getFont());
         g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over !!!"))/2, SCREEN_HEIGHT/2);
+        //restart text/ prompt
+        g.setColor(Color.white);
+        g.setFont(new Font("Ink Free", Font.BOLD, 30));
+        FontMetrics metrics3 = getFontMetrics(g.getFont());
+        g.drawString("Press 'R' to restart", (SCREEN_WIDTH - metrics3.stringWidth("Press 'R' to restart")) / 2, SCREEN_HEIGHT / 2 + 50);
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -164,6 +180,13 @@ public class GamePanel extends JPanel implements ActionListener {
     public class MyKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
+            if (!running) {
+                if (e.getKeyCode() == KeyEvent.VK_R) {
+                    initializeGame();
+                }
+                return;
+            }
+
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
                   if(direction != 'R'){
@@ -189,3 +212,5 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 }
+
+
