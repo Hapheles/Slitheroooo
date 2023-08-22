@@ -21,6 +21,8 @@ public class GamePanel extends JPanel implements ActionListener {
     char direction = 'R' ; //depends on which direction to start
     boolean running = false;
     Random random;
+    private Timer timer;
+    private int highestScore = 0;
     GamePanel() {
         random = new Random();
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
@@ -30,7 +32,7 @@ public class GamePanel extends JPanel implements ActionListener {
         initializeGame();
     }
 
-    private Timer timer;
+
 
     public void initializeGame() {
         if (timer != null) {
@@ -115,6 +117,9 @@ public class GamePanel extends JPanel implements ActionListener {
         if((x[0] == appleX) && (y[0] == appleY)) {
             bodyParts++;
             applesEaten++;
+            if (applesEaten > highestScore) {
+                highestScore = applesEaten; // Update the highest score
+            }
             newApple();
 
         }
@@ -156,6 +161,7 @@ public class GamePanel extends JPanel implements ActionListener {
         g.setFont(new Font("Ink Free", Font.BOLD, 40));
         FontMetrics metrics1 = getFontMetrics(g.getFont());
         g.drawString("Score: "+ applesEaten, (SCREEN_WIDTH - metrics1.stringWidth("Score: " + applesEaten))/2, g.getFont().getSize());
+        g.drawString("Highest Score: " + highestScore, (SCREEN_WIDTH - metrics1.stringWidth("High Score: " + highestScore)) / 2, g.getFont().getSize() * 2);
         //Game Over Text
         g.setColor(Color.red);
         g.setFont(new Font("Ink Free", Font.BOLD, 75));
@@ -166,6 +172,7 @@ public class GamePanel extends JPanel implements ActionListener {
         g.setFont(new Font("Ink Free", Font.BOLD, 30));
         FontMetrics metrics3 = getFontMetrics(g.getFont());
         g.drawString("Press 'R' to restart", (SCREEN_WIDTH - metrics3.stringWidth("Press 'R' to restart")) / 2, SCREEN_HEIGHT / 2 + 50);
+
     }
     @Override
     public void actionPerformed(ActionEvent e) {
